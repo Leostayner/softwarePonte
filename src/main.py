@@ -2,39 +2,38 @@ import math
 
 def lerArquivo(nome):
     arquivo = open(nome, "r")
-    tags = ["*COORDINATES\n" ,"*ELEMENT_GROUPS\n", "*INCIDENCES\n",
-            "*MATERIALS\n", "*GEOMETRIC_PROPERTIES\n", "*BCNODES\n", "*LOADS\n"]
-    valores =[]
+       
 
-    n = 0
-    for e in tags:
-        contador = 0
-        print("oooi")
-        for linha in arquivo:
-            if(e == linha):
-                if e=="*INCIDENCES":
-                    contador+=2
-                contador+=1
-                print("primeiro if")
-            
-            elif contador == 1:
-                n = int(linha)
-                contador += 1
-                print("segundo if %d", n)
+    matrizA = False
+    matrizB = False
 
-            elif contador<=(n+1) and linha !='\n':  
-                print("terceiro if")          
-                valores.append(linha.split())
-                contador+=1
-            else:
-                pass
-  
+    matrizNo = []
+    matrizE = []
 
+    tags = ["*A","*B","*C","*D"]
+    
+    for linha in arquivo:
+        linha = linha.replace('\n',"")
+        
+        if(linha == tags[0]):
+            matrizA = True    
+
+        elif(linha == tags[1]):
+            matrizB = True
+            matrizA = False
+ 
+        elif(matrizA == True ) and (len(linha) > 1):
+            if(linha[0] != '*'):
+                matrizNo.append(linha.split())
+        elif(matrizB == True ) and (len(linha) > 1):
+            if(linha[0] != '*'):
+                matrizE.append(linha.split())             
+    
     arquivo.close()
-    return valores
+    return matrizNo, matrizE
   
 def comprimento(xa, ya, xb, yb):
-	return math.sqrt(math.pow(xa - xb, 2) + math.pow(xa - xb, 2) )
+	return math.sqr(math.pow(xa - xb, 2) + math.pow(xa - xb, 2) )
   
 def cos(ya, xa, yb, xb, l):
     if (ya == yb):
@@ -55,33 +54,22 @@ def sin(ya, xa, yb, xb, l):
 def area(base, altura):
     return base * altura
 
-def matrizRigidez(k, s, c):
-	return k *[[c**2 , c*s  , -c**2, -c*s ],
+def matrixRigidez(k, s, c):
+	return k *[[c**2 , c*s , -c**2, -c*s ],
               [c*s  , s**2 , -c*s , -s**2 ],
               [-c**2, -c*s , c**2 , c*s   ],
               [-c*s , -s**2, c*s  , s**2 ]]
 
-def matrizGlobal(matrizA, matrizB, liberdade):
+def matrizGlobal(matrixA, matrixB, liberdade):
     for i in liberdade:
         for j in liberdade:
-            matrizA[i][j] += matrizB[i][j]
+            matrizA[i][j] += matrixB[i][j]
     return matrizA
     
-def cortaMatriz(no, matrizG):
-    n = len(no)
-    matrizC = [t-n][t-n]
-    
-    
-    
-
 def main():
-    arquivo = lerArquivo("entrada.txt")
-#    l = comprimento()
-#    area = area()
-#    m_els = null
-#    k = (m_els * area)/ l
-#    matrizG = matrizGlobal()
-    print(arquivo)
+    arquivo, arquivo2 = lerArquivo("entrada.txt")
+    print("MatrizA: {0} \n").format(arquivo)
+    print("MatrizB: {0} \n" ).format(arquivo2)
 main()
 
 
