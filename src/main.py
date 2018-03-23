@@ -2,17 +2,39 @@ import math
 
 def lerArquivo(nome):
     arquivo = open(nome, "r")
-    valores = []
+    tags = ["*COORDINATES\n" ,"*ELEMENT_GROUPS\n", "*INCIDENCES\n",
+            "*MATERIALS\n", "*GEOMETRIC_PROPERTIES\n", "*BCNODES\n", "*LOADS\n"]
+    valores =[]
 
-    for linha in arquivo:
-        if(linha != '\n'):
-          valores.append(linha)  
+    n = 0
+    for e in tags:
+        contador = 0
+        print("oooi")
+        for linha in arquivo:
+            if(e == linha):
+                if e=="*INCIDENCES":
+                    contador+=2
+                contador+=1
+                print("primeiro if")
+            
+            elif contador == 1:
+                n = int(linha)
+                contador += 1
+                print("segundo if %d", n)
+
+            elif contador<=(n+1) and linha !='\n':  
+                print("terceiro if")          
+                valores.append(linha.split())
+                contador+=1
+            else:
+                pass
+  
 
     arquivo.close()
     return valores
   
 def comprimento(xa, ya, xb, yb):
-	return math.sqr(math.pow(xa - xb, 2) + math.pow(xa - xb, 2) )
+	return math.sqrt(math.pow(xa - xb, 2) + math.pow(xa - xb, 2) )
   
 def cos(ya, xa, yb, xb, l):
     if (ya == yb):
@@ -33,19 +55,24 @@ def sin(ya, xa, yb, xb, l):
 def area(base, altura):
     return base * altura
 
-def matrixRigidez(k, s, c):
+def matrizRigidez(k, s, c):
 	return k *[[c**2 , c*s  , -c**2, -c*s ],
               [c*s  , s**2 , -c*s , -s**2 ],
               [-c**2, -c*s , c**2 , c*s   ],
               [-c*s , -s**2, c*s  , s**2 ]]
 
-def matrizGlobal(matrixA, matrixB, liberdade):
+def matrizGlobal(matrizA, matrizB, liberdade):
     for i in liberdade:
         for j in liberdade:
-            matrizA[i][j] += matrixB[i][j]
+            matrizA[i][j] += matrizB[i][j]
     return matrizA
     
-
+def cortaMatriz(no, matrizG):
+    n = len(no)
+    matrizC = [t-n][t-n]
+    
+    
+    
 
 def main():
     arquivo = lerArquivo("entrada.txt")
