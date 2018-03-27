@@ -1,47 +1,69 @@
 import math
 import numpy as np
 
-def lerArquivo(nome):
-    arquivo = open(nome, "r")
-    matriz = []
-    matrizA = []
-    matrizB = []
-    matrizC = []
-    matrizD = []
+class Ponte():
 
-
-    tags = ['*A','*B','*C','*D']
-    
-    for linha in arquivo:
-        linha = linha.replace('\n',"")
-
-        if(len(linha) > 0):
-            matriz.append(linha.split())    
-
-    contador = 0
-    for i in (matriz):
-        if i[0][0] == "*":
-            contador += 1
+    def __init__(self):
+        self.matrizCordenadas    = []
+        self.matrizElementos     = []
+        self.matrizIndices       = []
+        self.matrizMateriais     = []
+        self.matrizPropriedades  = []
+        self.matrizBcnodes       = []
+        self.matrizLoads         = []
         
-        elif (contador == 1 ):
-            matrizA.append(i)     
+    def main(self):    
+        self.lerArquivo("entrada.txt")
+        self.numeroNos = self.matrizCordenadas[0]
+        self.numeroElementos = self.matrizElementos [0]
 
-        elif (contador == 2):
-            matrizB.append(i)
+        print(self.numeroElementos)
+        print(self.matrizCordenadas)
+        
 
-        elif (contador == 3):
-            matrizC.append(i)
+    def lerArquivo(self, nome):
+        arquivo = open(nome, "r")
+        matriz = []
+        tags = ['*COORDINATES','*ELEMENT_GROUPS','*INCIDENCES','*MATERIALS',
+                '*GEOMETRIC_PROPERTIES','*BCNODES', '*LOADS']
+        
+        for linha in arquivo:
+            linha = linha.replace('\n',"")
 
-        elif (contador == 4):
-            matrizD.append(i)
-    print()
-    print(matrizB)
-    arquivo.close()
-    return matriz
+            if(len(linha) > 0):
+                matriz.append(linha.split())    
+
+        flag = ""
+        for i in (matriz):
+            if i[0][0] == "*":
+                flag = i[0]
+            
+            elif (flag == '*COORDINATES' ):
+                self.matrizCordenadas.append(i)     
+
+            elif (flag == '*ELEMENT_GROUPS'):
+                self.matrizElementos .append(i)
+
+            elif (flag == '*INCIDENCES'):
+                self.matrizIndices.append(i)
+
+            elif (flag == '*MATERIALS'):
+                self.matrizMateriais.append(i)
     
-def comprimento(xa, ya, xb, yb):
-	return math.sqr(math.pow(xa - xb, 2) + math.pow(xa - xb, 2) )
-  
+            elif (flag == '*GEOMETRIC_PROPERTIES'):
+                self.matrizPropriedades.append(i)
+
+            elif (flag == '*BCNODES'):
+                self.matrizBcnodes.append(i)
+
+            elif (flag == '*LOADS'):
+                self.matrizLoads.append(i)
+        arquivo.close()
+    
+    def comprimento(self):
+        return math.sqr(math.pow(xa - xb, 2) + math.pow(xa - xb, 2) )
+
+'''  
 def cos(ya, xa, yb, xb, l):
     if (ya == yb):
         return 1
@@ -73,11 +95,6 @@ def matrizGlobal(matrixA, matrixB, liberdade):
             matrizA[i][j] += matrixB[i][j]
     return matrizA
     
-def main():
-    arquivo = lerArquivo("entrada.txt")
-
-main()
-
 def matrixRestructure(matrix,graus):
 
     matriz = np.array(matrix)
@@ -91,4 +108,6 @@ def matrixRestructure(matrix,graus):
 
     return matriz
 
+'''
+Ponte().main()
 
