@@ -1,4 +1,5 @@
 import math
+import numpy as np
 
 def lerArquivo(nome):
     arquivo = open(nome, "r")
@@ -72,7 +73,17 @@ def main():
     print("MatrizB: {0} \n" ).format(arquivo2)
 main()
 
+def matrixRestructure(matrix,graus):
 
+    matriz = np.array(matrix)
 
+    for i in graus:
+        
+        if i[1] == 1:
+           matriz = np.delete(matriz,(i[0])-1,0)
+        else:
+             matriz = np.delete(matriz,(i[0])-1,1)
+
+    return matriz
 
 
