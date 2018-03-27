@@ -1,4 +1,6 @@
 import math
+from numpy.linalg import inv
+import numpy as np
 
 def lerArquivo(nome):
     arquivo = open(nome, "r")
@@ -70,8 +72,12 @@ def matrizGlobal(matrizA, matrizB, liberdade):
 def cortaMatriz(no, matrizG):
     n = len(no)
     matrizC = [t-n][t-n]
+
+def deslocamento (matrizC, forca):
+    invC = inv(matrizC)
+    deslocamento = np.matmul(forca, invC)
     
-    
+
     
 
 def main():
