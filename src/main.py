@@ -94,19 +94,21 @@ def matrizGlobal(matrixA, matrixB, liberdade):
         for j in liberdade:
             matrizA[i][j] += matrixB[i][j]
     return matrizA
-    
-def matrixRestructure(matrix,graus):
 
+def matrixRestructure(matrix,matrixF,graus):
+    
     matriz = np.array(matrix)
 
     for i in graus:
         
         if i[1] == 1:
            matriz = np.delete(matriz,(i[0])-1,0)
+           matrizF = np.delete(matrizF,(i[0])-1,0)
         else:
              matriz = np.delete(matriz,(i[0])-1,1)
+             matrizF = np.delete(matrizF,(i[0])-1,1)
 
-    return matriz
+    return matriz, matrixF
 
 '''
 Ponte().main()
