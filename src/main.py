@@ -14,12 +14,8 @@ class Ponte():
         
     def main(self):    
         self.lerArquivo("entrada.txt")
-        self.numeroNos = self.matrizCordenadas[0]
-        self.numeroElementos = self.matrizElementos [0]
-
-        print(self.numeroElementos)
-        print(self.matrizCordenadas)
-        
+        comprimento = self.comprimento(1)
+        print(comprimento)        
 
     def lerArquivo(self, nome):
         arquivo = open(nome, "r")
@@ -59,11 +55,22 @@ class Ponte():
             elif (flag == '*LOADS'):
                 self.matrizLoads.append(i)
         arquivo.close()
-    
-    def comprimento(self):
-        return math.sqr(math.pow(xa - xb, 2) + math.pow(xa - xb, 2) )
 
-'''  
+
+    def comprimento(self, elemento):
+        xa = self.matrizCordenadas[self.matrizIndices[elemento - 1][1]][1])
+        yb = self.matrizCordenadas[self.matrizIndices[elemento - 1][1]][2])
+        xb = self.matrizCordenadas[self.matrizIndices[elemento - 1][2]][1])
+        yb = self.matrizCordenadas[self.matrizIndices[elemento - 1][2]][2])
+        return math.sqr(math.pow(xa - xb, 2) + math.pow(xa - xb, 2)
+
+'''      
+def comprimento(self):
+
+
+    return math.sqr(math.pow(xa - xb, 2) + math.pow(xa - xb, 2) )
+
+
 def cos(ya, xa, yb, xb, l):
     if (ya == yb):
         return 1
