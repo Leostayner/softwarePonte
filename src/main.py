@@ -1,7 +1,7 @@
-import math
+from math import *
 import numpy as np
 
-class Ponte():
+class ArquivoTXT():
 
     def __init__(self):
         self.matrizCordenadas    = []
@@ -11,110 +11,110 @@ class Ponte():
         self.matrizPropriedades  = []
         self.matrizBcnodes       = []
         self.matrizLoads         = []
-        
-    def main(self):    
         self.lerArquivo("entrada.txt")
-        comprimento = self.comprimento(1)
-        print(comprimento)        
-
+        
     def lerArquivo(self, nome):
         arquivo = open(nome, "r")
         matriz = []
-        tags = ['*COORDINATES','*ELEMENT_GROUPS','*INCIDENCES','*MATERIALS',
-                '*GEOMETRIC_PROPERTIES','*BCNODES', '*LOADS']
+        tags = ["*COORDINATES","*ELEMENT_GROUPS","*INCIDENCES","*MATERIALS",
+                "*GEOMETRIC_PROPERTIES","*BCNODES", "*LOADS"]
         
         for linha in arquivo:
             linha = linha.replace('\n',"")
+            linha = linha.replace("BAR","")
 
-            if(len(linha) > 0):
+            if(len(linha) > 1):
                 matriz.append(linha.split())    
 
         flag = ""
         for i in (matriz):
+            
             if i[0][0] == "*":
                 flag = i[0]
             
-            elif (flag == '*COORDINATES' ):
-                self.matrizCordenadas.append(i)     
+            else:
+                for j in range(len(i)):
+                    i[j] = float(i[j])
 
-            elif (flag == '*ELEMENT_GROUPS'):
-                self.matrizElementos .append(i)
+                if (flag == "*COORDINATES" ):
+                    self.matrizCordenadas.append(i)     
 
-            elif (flag == '*INCIDENCES'):
-                self.matrizIndices.append(i)
+                elif (flag == "*ELEMENT_GROUPS"):
+                    self.matrizElementos .append(i)
 
-            elif (flag == '*MATERIALS'):
-                self.matrizMateriais.append(i)
-    
-            elif (flag == '*GEOMETRIC_PROPERTIES'):
-                self.matrizPropriedades.append(i)
+                elif (flag == "*INCIDENCES"):
+                    self.matrizIndices.append(i)
 
-            elif (flag == '*BCNODES'):
-                self.matrizBcnodes.append(i)
+                elif (flag == "*MATERIALS"):
+                    self.matrizMateriais.append(i)
 
-            elif (flag == '*LOADS'):
-                self.matrizLoads.append(i)
+                elif (flag == "*GEOMETRIC_PROPERTIES"):
+                    self.matrizPropriedades.append(i)
+
+                elif (flag == "*BCNODES"):
+                    self.matrizBcnodes.append(i)
+
+                elif (flag == "*LOADS"):
+                    self.matrizLoads.append(i)
         arquivo.close()
 
 
-    def comprimento(self, elemento):
-        xa = self.matrizCordenadas[self.matrizIndices[elemento - 1][1]][1])
-        yb = self.matrizCordenadas[self.matrizIndices[elemento - 1][1]][2])
-        xb = self.matrizCordenadas[self.matrizIndices[elemento - 1][2]][1])
-        yb = self.matrizCordenadas[self.matrizIndices[elemento - 1][2]][2])
-        return math.sqr(math.pow(xa - xb, 2) + math.pow(xa - xb, 2)
-
-'''      
-def comprimento(self):
-
-
-    return math.sqr(math.pow(xa - xb, 2) + math.pow(xa - xb, 2) )
-
-
-def cos(ya, xa, yb, xb, l):
-    if (ya == yb):
-        return 1
-    elif (xa == xb):
-        return 0
-    else:
-        return abs(yb - ya)/(l)
-
-def sin(ya, xa, yb, xb, l):
-    if (ya == yb):
-        return 0
-    elif (xa == xb):
-        return 1
-    else:
-        return abs(xb - xa)/l
-
-def area(base, altura):
-    return base * altura
-
-def matrixRigidez(k, s, c):
-	return k *[[c**2 , c*s , -c**2, -c*s ],
-              [c*s  , s**2 , -c*s , -s**2 ],
-              [-c**2, -c*s , c**2 , c*s   ],
-              [-c*s , -s**2, c*s  , s**2 ]]
-
-def matrizGlobal(matrixA, matrixB, liberdade):
-    for i in liberdade:
-        for j in liberdade:
-            matrizA[i][j] += matrixB[i][j]
-    return matrizA
+class Elemento():
+    def __init__(self, numeroE):
+        self.data = ArquivoTXT()
+        self.main(numeroE - 1)
     
-def matrixRestructure(matrix,graus):
+    def main(self,numeroE):
+        self.getIncidencia(numeroE)
+        self.getCordenadas()
+        self.comprimento()
+        self.cos()
+        self.sin()
+    
 
-    matriz = np.array(matrix)
+    def getIncidencia(self, numeroE):
+        self.incidencias = [0, 0]
+        self.incidencias[0] = int(self.data.matrizIndices[numeroE][1])
+        self.incidencias[1] = int(self.data.matrizIndices[numeroE][2])
+        print("Incidencias: ", self.incidencias)
+       
+    def getCordenadas(self):
+        self.coordenadas = [[0,0],[0,0]]
+        for i in range(2):
+            for j in range(2):
+                self.coordenadas[i][j] = self.data.matrizCordenadas[self.incidencias[i]][self.incidencias[j]]
+        print("Coordenadas: ", self.coordenadas)
+      
+    def comprimento(self):
+        self.comprimento = sqrt(pow(self.coordenadas[0][0] - self.coordenadas[1][0], 2) + pow(self.coordenadas[0][1] - self.coordenadas[1][1], 2))
+        print(self.comprimento)
 
-    for i in graus:
-        
-        if i[1] == 1:
-           matriz = np.delete(matriz,(i[0])-1,0)
+    def cos(self):
+        if(self.coordenadas[0][1] == self.coordenadas[1][1]):
+            self.cos =  1
+        elif(self.coordenadas[0][0] == self.coordenadas[1][0]):
+            self.cos =  0
         else:
-             matriz = np.delete(matriz,(i[0])-1,1)
+            self.cos = abs(self.coordenadas[0][1] - self.coordenadas[1][1])/(self.comprimento)
+        print("cos :",self.cos)
 
-    return matriz
+    def sin(self):
+        if(self.coordenadas[0][1] == self.coordenadas[1][1]):
+            self.cos =  0
+        elif(self.coordenadas[0][0] == self.coordenadas[1][0]):
+            self.cos =  1
+        else:
+            self.cos = abs(self.coordenadas[0][0] - self.coordenadas[1][0])/(self.comprimento)
+        print("sen :",self.cos)
 
-'''
-Ponte().main()
+#    def area(self):
+    
+#    def matrizGlobal(self):
+
+#    def matrizRestruturada(self):
+
+
+
+Elemento(1)
+
 
