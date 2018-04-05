@@ -1,4 +1,5 @@
 from math import *
+import numpy as np
 
 class ArquivoTXT():
 
@@ -10,8 +11,8 @@ class ArquivoTXT():
         self.matrizPropriedades  = []
         self.matrizBcnodes       = []
         self.matrizLoads         = []
+        self.quatidadeElementos = 0
         self.lerArquivo("entrada.txt")
-
         
     def lerArquivo(self, nome):
         arquivo = open(nome, "r")
@@ -22,8 +23,8 @@ class ArquivoTXT():
         for linha in arquivo:
             linha = linha.replace('\n',"")
             linha = linha.replace("BAR","")
-
-            if(len(linha) > 1):
+        
+            if(len(linha) > 0):
                 matriz.append(linha.split())    
 
         flag = ""
@@ -31,6 +32,10 @@ class ArquivoTXT():
             
             if i[0][0] == "*":
                 flag = i[0]
+            
+            elif ( len(i) == 1): 
+                    if(flag == "*ELEMENT_GROUPS"):
+                        self.quantidadeElementos = i[0]
             
             else:
                 for j in range(len(i)):
@@ -67,7 +72,7 @@ class Elemento():
         self.incidencias   = self.data.matrizIndices[self.numeroE]
         self.material      = self.data.matrizMateriais[self.numeroE]
         self.propriedade   = self.data.matrizPropriedades[self.numeroE]
-        print(self.propriedade)
+        self.liberdade = []
         self.main()
              
     def main(self):
@@ -76,8 +81,10 @@ class Elemento():
         self.cos()
         self.sin()
         self.area()
-        self.getMatrixRigidez()
-       
+        self.getMatrizRigidez()
+        self.status()
+        self.getLiberdade()
+
     def getCordenadas(self):
         self.coordenadas = [[0,0],[0,0]]
         
@@ -89,8 +96,7 @@ class Elemento():
       
     def comprimento(self):
         self.comprimento = sqrt(pow(self.coordenadas[0][0] - self.coordenadas[1][0], 2) + pow(self.coordenadas[0][1] - self.coordenadas[1][1], 2))
-        print(self.comprimento)
-
+        
     def cos(self):
         if(self.coordenadas[0][1] == self.coordenadas[1][1]):
             self.c =  1
@@ -98,7 +104,6 @@ class Elemento():
             self.c =  0
         else:
             self.c = abs(self.coordenadas[0][1] - self.coordenadas[1][1])/(self.comprimento)
-        print("cos :",self.c)
 
     def sin(self):
         if(self.coordenadas[0][1] == self.coordenadas[1][1]):
@@ -107,44 +112,76 @@ class Elemento():
             self.s =  1
         else:
             self.s = abs(self.coordenadas[0][0] - self.coordenadas[1][0])/(self.comprimento)
-        print("sen :",self.s)
 
     def area(self):
-        self.area = self.propriedade[self.numeroE + 1]
-        print("Area:", self.area)
+        self.area = self.propriedade[1]
 
-    def getMatrixRigidez(self):
-        print(self.material[0])
+   def getMatrixRigidez(self):
         k = int((self.material[0] * self.area) / self.comprimento) 
-        print(k)
         matriz =    [[self.c**2 , self.c* self.s , -self.c**2, -self.c* self.s ],
                     [self.c* self.s  , self.s**2 , -self.c* self.s , -self.s**2 ],
                     [-self.c**2, -self.c* self.s , self.c**2 , self.c* self.s   ],
                     [-self.c* self.s , -self.s**2, self.c* self.s  , self.s**2 ]]
 
         
-        self.matrixRigidez = []
+        self.matrizRigidez = []
 
         for e in matriz:
-            self.matrixIntermediaria = []
+            self.matrizIntermediaria = []
             for i in e:
-                self.matrixIntermediaria.append(k*i)
-            self.matrixRigidez.append(self.matrixIntermediaria)
-            
+                self.matrizIntermediaria.append(k*i)
+            self.matrizRigidez.append(self.matrizIntermediaria)
         
-        print(self.matrixRigidez)
+    def getLiberdade(self):
+        for i in (self.incidencias[1:]):
+            self.liberdade.append(i)
+            self.liberdade.append(i + 1)
+
+    
+    def status(self):
+        print("Elemento: ",self.numeroE)
+        print("incidencias: ",self.incidencias)
+        print("material: ",self.material)   
+        print("Propriedade: ",self.propriedade)
+        print("Comprimento: ",self.comprimento)
+        print("cos :",self.c)
+        print("sen :",self.s)
+        print("Area:", self.area)
+        print("matrizRigidez: ",self.matrizRigidez)
+        print()
+
+
+class CalculoGlobal():
+
+    def __init__(self):
+        self.data = ArquivoTXT()
+        self.elemento = []
+        self.main()
         
+    def main(self):
+        for i in range(1, int(self.data.quantidadeElementos) + 1):
+            print("---------------",i)
+            self.elemento.append(Elemento(i))
+        self.matrizGlobal()
+
+    def matrizGlobal(self):    
+        s = (int(self.data.quantidadeElementos) * 2,int(self.data.quantidadeElementos) * 2)
+        self.matrizGlobal = np.zeros(s)
         
-Elemento(1)
+        for obj in (self.elemento):
+            contadorLinha = 0
+            contadorColuna = 0
+            for i in (obj.liberdade):
+                for j in(obj.liberdade):
+                    self.matrizGlobal[int(i) - 1][int(j) - 1] = obj.matrizRigidez[contadorLinha][contadorColuna] 
+                contadorColuna += 1
+            contadorLinha += 1 
+        print(self.matrizGlobal)
+        
+    
+    def matrizRestruturada(self):
 
-
-#    def matrizRestruturada(self):
-
-
-
-
-
-
+CalculoGlobal()
 
 
 
