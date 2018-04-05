@@ -11,6 +11,7 @@ class ArquivoTXT():
         self.matrizBcnodes       = []
         self.matrizLoads         = []
         self.lerArquivo("entrada.txt")
+
         
     def lerArquivo(self, nome):
         arquivo = open(nome, "r")
@@ -117,10 +118,20 @@ class Elemento():
         k = int((self.material[0] * self.area) / self.comprimento) 
         print(k)
         matriz =    [[self.c**2 , self.c* self.s , -self.c**2, -self.c* self.s ],
-                                 [self.c* self.s  , self.s**2 , -self.c* self.s , -self.s**2 ],
-                                 [-self.c**2, -self.c* self.s , self.c**2 , self.c* self.s   ],
-                                 [-self.c* self.s , -self.s**2, self.c* self.s  , self.s**2 ]]
-        self.matrixRigidez = k * matriz
+                    [self.c* self.s  , self.s**2 , -self.c* self.s , -self.s**2 ],
+                    [-self.c**2, -self.c* self.s , self.c**2 , self.c* self.s   ],
+                    [-self.c* self.s , -self.s**2, self.c* self.s  , self.s**2 ]]
+
+        
+        self.matrixRigidez = []
+
+        for e in matriz:
+            self.matrixIntermediaria = []
+            for i in e:
+                self.matrixIntermediaria.append(k*i)
+            self.matrixRigidez.append(self.matrixIntermediaria)
+            
+        
         print(self.matrixRigidez)
         
         
