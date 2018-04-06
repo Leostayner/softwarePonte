@@ -1,5 +1,6 @@
 from math import *
 import numpy as np
+from numpy.linalg import inv, det
 
 class ArquivoTXT():
 
@@ -11,7 +12,8 @@ class ArquivoTXT():
         self.matrizPropriedades  = []
         self.matrizBcnodes       = []
         self.matrizLoads         = []
-        self.quatidadeElementos = 0
+        self.quantidadeNos = 0
+        self.quantidadeforcas = 0
         self.lerArquivo("entrada.txt")
         
     def lerArquivo(self, nome):
@@ -34,9 +36,11 @@ class ArquivoTXT():
                 flag = i[0]
             
             elif ( len(i) == 1): 
-                    if(flag == "*ELEMENT_GROUPS"):
-                        self.quantidadeElementos = i[0]
-            
+                    if(flag == "*COORDINATES"):
+                        self.quantidadeNos = i[0]
+                    
+                    elif(flag == "*LOADS"):
+                        self.quantidadeforcas = i[0]
             else:
                 for j in range(len(i)):
                     i[j] = float(i[j])
@@ -82,8 +86,8 @@ class Elemento():
         self.sin()
         self.area()
         self.getMatrizRigidez()
-        self.status()
         self.getLiberdade()
+        self.status()
 
     def getCordenadas(self):
         self.coordenadas = [[0,0],[0,0]]
@@ -116,27 +120,27 @@ class Elemento():
     def area(self):
         self.area = self.propriedade[1]
 
-   def getMatrixRigidez(self):
+    def getMatrizRigidez(self):
         k = int((self.material[0] * self.area) / self.comprimento) 
+        
         matriz =    [[self.c**2 , self.c* self.s , -self.c**2, -self.c* self.s ],
                     [self.c* self.s  , self.s**2 , -self.c* self.s , -self.s**2 ],
                     [-self.c**2, -self.c* self.s , self.c**2 , self.c* self.s   ],
                     [-self.c* self.s , -self.s**2, self.c* self.s  , self.s**2 ]]
 
-        
         self.matrizRigidez = []
-
         for e in matriz:
             self.matrizIntermediaria = []
             for i in e:
                 self.matrizIntermediaria.append(k*i)
             self.matrizRigidez.append(self.matrizIntermediaria)
         
+        
     def getLiberdade(self):
         for i in (self.incidencias[1:]):
-            self.liberdade.append(i)
-            self.liberdade.append(i + 1)
-
+                self.liberdade.append((i * 2) -1)
+                self.liberdade.append(i * 2)
+            
     
     def status(self):
         print("Elemento: ",self.numeroE)
@@ -144,6 +148,7 @@ class Elemento():
         print("material: ",self.material)   
         print("Propriedade: ",self.propriedade)
         print("Comprimento: ",self.comprimento)
+        print("Liberdade:", self.liberdade )
         print("cos :",self.c)
         print("sen :",self.s)
         print("Area:", self.area)
@@ -159,27 +164,59 @@ class CalculoGlobal():
         self.main()
         
     def main(self):
-        for i in range(1, int(self.data.quantidadeElementos) + 1):
-            print("---------------",i)
+        for i in range(1, int(self.data.quantidadeNos) + 1):
             self.elemento.append(Elemento(i))
+        
         self.matrizGlobal()
+        self.vetorForca()
+        self.matrizRestructure()
+        self.matrizInversa()
 
     def matrizGlobal(self):    
-        s = (int(self.data.quantidadeElementos) * 2,int(self.data.quantidadeElementos) * 2)
+        s = (int(self.data.quantidadeNos) * 2,int(self.data.quantidadeNos) * 2)
         self.matrizGlobal = np.zeros(s)
         
         for obj in (self.elemento):
             contadorLinha = 0
-            contadorColuna = 0
             for i in (obj.liberdade):
+                contadorColuna = 0
                 for j in(obj.liberdade):
-                    self.matrizGlobal[int(i) - 1][int(j) - 1] = obj.matrizRigidez[contadorLinha][contadorColuna] 
-                contadorColuna += 1
-            contadorLinha += 1 
-        print(self.matrizGlobal)
-        
-    
-    def matrizRestruturada(self):
+                    self.matrizGlobal[int(i) - 1][int(j) - 1] += obj.matrizRigidez[contadorLinha][contadorColuna]
+                    contadorColuna += 1
+                contadorLinha += 1 
+        print("Global: \n",self.matrizGlobal)
+
+
+    def vetorForca(self):
+        s = (int(self.data.quantidadeNos) * 2, 1)
+        self.vetorF = np.zeros(s)
+        for i in range(int(self.data.quantidadeforcas)):
+            
+            if(self.data.matrizLoads[i][1] == 1.0): 
+                indice = (int(self.data.matrizLoads[i][0]) * 2) - 2 
+                self.vetorF[indice][0] =  self.data.matrizLoads[i][2]
+            
+            if(self.data.matrizLoads[i][1] == 2.0):
+                indice = (int(self.data.matrizLoads[i][0]) * 2 ) - 1
+                self.vetorF[indice][0] =  self.data.matrizLoads[i][2]
+
+    def matrizRestructure(self):
+        graus = self.data.matrizBcnodes
+        self.matrizCortada = np.array(self.matrizGlobal) 
+        self.matrizFCortada = np.array(self.vetorF)
+
+        for i in graus:
+            self.matrizCortada = np.delete(self.matrizCortada,(i[0])-1,0)
+            self.matrizCortada = np.delete(self.matrizCortada,(i[0])-1,1)
+            self.matrizFCortada = np.delete(self.matrizFCortada,(i[0])-1,0)
+
+    def matrizInversa(self):
+        print("Cortada: \n",self.matrizCortada)
+        dete = det(self.matrizCortada)
+        print("determinante:",dete)
+        invC = inv(self.matrizCortada)
+        deslocamento = np.matmul(invC, self.matrizFCortada)
+        print("Deslocamento: ",deslocamento)
 
 CalculoGlobal()
 
