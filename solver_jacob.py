@@ -8,8 +8,10 @@ def metodos (ite, tol, K, F, n):
             if K[i][i] == 0:
                 U2[i]=0
             else:
+                
                 U2[i] = float(F[i]/K[i][i])
                 contador = 0  
+
                 for j in range(n):
                     if i == j:
                         pass
@@ -21,11 +23,11 @@ def metodos (ite, tol, K, F, n):
             if U[i] == 0:
                 erro = 0
             else:
-                erro = float((U2[i]-U[i])/U[i])
+                erro = abs(float((U2[i]-U[i])/U[i]))
             if erro<max_erro:
                 max_erro = erro
 
-        if ((max_erro < tol) and (max_erro != tol)):
+        if ((max_erro < tol) and (max_erro != 0)):
             return U2
         
         U = U2
