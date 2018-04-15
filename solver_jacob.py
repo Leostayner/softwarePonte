@@ -1,7 +1,12 @@
 def metodos (ite, tol, K, F, n):
-    U = [1,1,1,1,1,1]
-    U2 = [0,0,0,0,0,0]
-    max_erro = 0
+    U = []
+    U2 = []
+
+    for v in range(n):
+        U.append(1)
+        U2.append(1)
+
+    max_erro = 1
     
     for k in range(ite):
         for i in range(n):
@@ -17,39 +22,33 @@ def metodos (ite, tol, K, F, n):
                         contador -= float(K[i][j]*U[j]/K[i][i])
                 U2[i]+=contador
 
-
-        for i in range(n):
-            if U[i] == 0:
+        for a in range(n):
+            if U[a] == 0:
                 erro = 0
             else:
-                erro = abs(float((U2[i]-U[i])/U[i]))
-                print("U2", U2[i])
-                print("U", U[i])
+                erro = abs(float((U2[a]-U[a])/U[a]))
+                print("erro", erro)
             if erro < max_erro:
                 max_erro = erro
 
-            
+        U = U2
 
         if ((max_erro < tol) and (max_erro != 0)):
-            
+            print("tolerancia max", max_erro)
+            print("k", k)
             return U2
-        U = U2
+        
    
     return U2
      
-        
-        
-K=[[192600, 38400, -141400, 0, -51200, -38400],
-   [38400, 28800, 0, 0, -38400, -28800],
-   [-141400, 0, 141400, 0, 0, 0],
-   [0, 0, 0, 188533, 0, -188533],
-   [-15200, -38400, 0, 0, 51200, 38400],
-   [-38400, -28800, 0, -188533, 38400, 217333]]
 
-F=[1500,-1000,0, 0, 0, 0]
+K = [[192600., 38400.], 
+     [38400., 28800.]]  
+
+F=[1500,-1000]
 
 ite = 500
 tol =  0.0001
-n = 6
+n = 2
 
 print(metodos(ite, tol, K, F, n))
