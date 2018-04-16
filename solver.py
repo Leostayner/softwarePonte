@@ -30,7 +30,6 @@ def metodos (ite, tol, K, F, n):
                 u_k1[j+1]=float((conta2)/K[j+1][j+1])
                 j+=12
 
-            print(u_k, u_k1)
         if k==0:
             u_k = u_k1
 
@@ -44,7 +43,6 @@ def metodos (ite, tol, K, F, n):
                 return u_k1 
             u_k = u_k1     
         k+=1
-    print("rodou 100 vezes", k)
     return u_k1
     
 
