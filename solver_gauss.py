@@ -13,36 +13,40 @@ def metodos (ite, tol, K, F, n):
             if K[i][i] == 0:
                 U2[i]=0
             else:
-                U2[i] = float(F[i]/K[i][i])
+                U2[i] = float(F[i])/float(K[i][i])
                 contador = 0  
                 for j in range(n):
                     if i == j:
                         pass
                     else:
-                        contador -= float(K[i][j]*U2[j]/K[i][i])
+                        contador -= float(K[i][j]*U2[j])/float(K[i][i])
                 U2[i]+=contador
 
         for a in range(n):
             if U2[a] == 0:
                 erro = 0
             else:
-                erro = abs(float((U2[a]-U[a])/U2[a]))
-            if erro < max_erro:
+                erro = abs(float((U2[a]-U[a]))/float(U2[a]))
+            if (erro < max_erro) and erro>0:
                 max_erro = erro
         
         U = U2[:]
 
         if ((max_erro < tol) and (max_erro > 0)):
-            return U2, max_erro
+            return U2, max_erro, k
 
-    return U2, max_erro
+    return U2, max_erro, k
      
 
-K = [[192600., 38400.], 
-     [38400., 28800.]]  
+K = [[150000, -50000, 0, 0], 
+     [-50000, 150000, 0, -100000],
+     [0, 0, 150000, 50000],
+     [0, -100000, 50000, 150000]]  
 
-F=[1500,-1000]
+F=[0, 0, 0, -100]
 
-ite = 5000
-tol =  0.00001
-n = 2
+ite = 600
+tol =  0.000000001
+n = 4
+
+print(metodos (ite, tol, K, F, n))
