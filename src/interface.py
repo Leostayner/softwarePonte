@@ -306,7 +306,7 @@ class Menu_Principal():
     def botao_point(self):
         print(len(self.textPointx.get()))
         
-        if((len(self.textPointx.get()) == 3 ) and (len(self.textPointx.get()) == 3)):
+        if((len(self.textPointx.get()) >= 3 ) and (len(self.textPointx.get()) >= 3)):
             self.conterPontos += 1
             
             self.x0 = float(self.textPointx.get())*400 + 100 

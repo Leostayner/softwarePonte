@@ -1,6 +1,7 @@
 from math import *
 import numpy as np
 from numpy.linalg import inv, det
+import solver_gauss
 
 class ArquivoTXT():
 
@@ -263,9 +264,12 @@ class CalculoGlobal():
             contador += 1
        
     def matrizInversa(self):
-        dete = det(self.matrizCortada)
-        invC = inv(self.matrizCortada)
-        self.u = np.matmul(invC, self.matrizFCortada)
+        ite = 600
+        tol =  0.000000001
+        self.u,a,b = solver_gauss.metodos (ite, tol, self.matrizCortada, self.matrizFCortada, len(self.matrizFCortada))
+        #dete = det(self.matrizCortada)
+        #invC = inv(self.matrizCortada)
+        #self.u = np.matmul(invC, self.matrizFCortada)
        
     
     def getReacaoApoio(self):
