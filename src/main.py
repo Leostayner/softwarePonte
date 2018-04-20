@@ -17,7 +17,7 @@ class ArquivoTXT():
         self.quantidadeforcas = 0
         self.quantidadeBCNodes = 0
         self.qunatidadeElementos = 0
-        self.lerArquivo("entradaInterface.txt")
+        self.lerArquivo("./txt/entradaInterface.txt")
         
     def lerArquivo(self, nome):
         arquivo = open(nome, "r")
@@ -338,7 +338,7 @@ class GerarTXT():
     def __init__(self):
         self.dadosGlobal = CalculoGlobal()
         self.data = ArquivoTXT()
-        arq = open("saida.txt", 'w')
+        arq = open("./txt/saida.txt", 'w')
         
         arq.write("*DISPLACEMENTS \n")
         arq.write(str(self.data.quantidadeNos) + "\n") 

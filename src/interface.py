@@ -100,11 +100,11 @@ class Menu_Principal():
         self.canvas.create_line(5, 5, 650, 5, width=5)
         self.canvas.create_line(5, 5, 5, 430, width=5)
         
-        self.Legenda = ImageTk.PhotoImage(Image.open("./legenda.png"))
+        self.Legenda = ImageTk.PhotoImage(Image.open("./imagenInterface/legenda.png"))
         self.Legenda_label = tk.Label(self.window1,image = self.Legenda, bg = "white")
         self.Legenda_label.grid(row = 14, rowspan = 1, column = 0, columnspan = 1, sticky = "nsew") 
         
-        self.Logo = ImageTk.PhotoImage(Image.open("./imageLogo.png"))
+        self.Logo = ImageTk.PhotoImage(Image.open("./imagenInterface/imageLogo.png"))
         self.Logo_label = tk.Label(self.window1,image = self.Logo, height = 4, width = 30)
         self.Logo_label.grid(row = 0, column = 1, columnspan = 2, sticky = "nsew")        
         
@@ -368,7 +368,7 @@ class Menu_Principal():
     def criarTXT(self):
         
         print(self.matrizPontos)
-        arq = open("entradaInterface.txt", 'w')
+        arq = open("./txt/entradaInterface.txt", 'w')
 
         arq.write("*COORDINATES\n")
         arq.write(str(self.conterPontos) + "\n")
