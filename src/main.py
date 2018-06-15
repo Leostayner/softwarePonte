@@ -385,12 +385,12 @@ class GerarTXT():
             
         arq.close()
 
-#CalculoGlobal()
-#GerarTXT()
+CalculoGlobal()
+GerarTXT()
 
-def run():
-    CalculoGlobal()
-    GerarTXT()
+#def run():
+#    CalculoGlobal()
+#    GerarTXT()
 
 
 
